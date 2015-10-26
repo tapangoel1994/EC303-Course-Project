@@ -13,10 +13,10 @@ using namespace std;
 #define PI 3.14159
 
 
-const int N=100; // Number of individuals in each flock
+const int N=50; // Number of individuals in each flock
 
 
-float L,r=1,delta_r,v=.03,delta_t=1,eta;
+float L,r=1,delta_r = 0,v=.03,delta_t=1,eta;
 
 
 float simulate(float x1[2][N],float y1[2][N],float theta1[2][N],float x2[2][N],float y2[2][N],float theta2[2][N],long int T, FILE *fp); //Runs simulation
@@ -33,7 +33,7 @@ float *correlation(float x[2][N],float y[2][N],float theta[2][N],float l,float d
 
 void timeseriesplot();
 void plot(FILE *fp);
-void write_to_file(float x[2][N],float y[2][N]);
+void write_to_file(float x1[2][N],float y1[2][N],float x2[2][N],float y2[2][N]);
 
 
 
@@ -47,24 +47,36 @@ int main()
      long int T = 5000;
      FILE *data;
      
+     data = fopen("Test.csv","w");
      
-     density = 5.00;
+     density = 4.00;
+     L = sqrt(2*N/density);
      
-     L = sqrt(N/density);
+    fprintf(data,"Noise,OP,Error\n");
      
-     for(eta = 0;eta <= 7;eta+= .25)
+     for(eta = 3;eta <= 7;eta+= .25)
      {
-	  sprintf(name,"Correlations/Density_%.2fNoise_%.2f.csv",density,eta);
-	  printf("%s\n",name);
-	  data = fopen(name,"w");
+	  for(int i = 0; i< n;i++)
+	  {
+	       v_a[i] = simulate(x1,y1,theta1,x2,y2,theta2,T,data);     
+	  }
 	  
-	  v_a[0] = simulate(x1,y1,theta1,x2,y2,theta2,T,data); 
+	  mean = 0;
+	  stdev = 0;
 	  
-	  fclose(data);
+	  for(int i = 0;i < n; i++)
+	  {
+	       mean += v_a[i];
+	       stdev += v_a[i]*v_a[i]; 
+	  }
 	  
+	  mean = mean/n;
+// 	  stdev = (stdev - n*mean*mean)/(n-1);
+	  
+	  fprintf(data,"%.2f,%.2f,%.2f\n",eta,mean,stdev);
      }
      
-     
+     fclose(data);
      return 0;
 }
 
@@ -72,8 +84,8 @@ int main()
 float simulate(float x1[2][N],float y1[2][N],float theta1[2][N],float x2[2][N],float y2[2][N],float theta2[2][N],long int T,FILE *fp)
 {
      
-     // FILE *gnupipe;
-     //  gnupipe = popen("gnuplot -persistent","w");
+      FILE *gnupipe;
+       gnupipe = popen("gnuplot -persistent","w");
      
      
      initialize(x1,y1,theta1,x2,y2,theta2);   
@@ -84,15 +96,15 @@ float simulate(float x1[2][N],float y1[2][N],float theta1[2][N],float x2[2][N],f
 	  update_pos(x1,y1,theta1,x2,y2,theta2);
 	  update_vel(x1,y1,theta1,x2,y2,theta2);
 	  
-	  // fprintf(fp,"%ld\t%f\n",t,Orderparameter(theta));
-	  // write_to_file(x,y);
+	  //fprintf(fp,"%ld\t%f\n",t,Orderparameter(theta));
+	   write_to_file(x1,y1,x2,y2);
 	  
-	  //plot(gnupipe);
+	  plot(gnupipe);
 	  
 	  swap(x1,y1,theta1,x2,y2,theta2);
      }
      
-     // pclose(gnupipe);
+      pclose(gnupipe);
      /*
      for(i = 0;i < (N-1);i++)
      {
@@ -203,15 +215,15 @@ void update_vel(float x1[2][N],float y1[2][N],float theta1[2][N],float x2[2][N],
 	  sumcos1 = 0;
 	  count1 = 0;
 	  
-	  sumsin1 = 0;
-	  sumcos1 = 0;
-	  count1 = 0;
+	  sumsin2 = 0;
+	  sumcos2 = 0;
+	  count2 = 0;
 	  
 	  for(int j =0 ; j < N; j++)
 	  {
 	       d_same = distance(x1[0][i],x1[0][j],y1[0][i],y1[0][j]);
 	       
-	       if(d_same < r)
+	       if(d_same <= r)
 	       {
 		    sumsin1 += sin( theta1[0][j]);
 		    sumcos1 += cos( theta1[0][j]);
@@ -220,7 +232,7 @@ void update_vel(float x1[2][N],float y1[2][N],float theta1[2][N],float x2[2][N],
 	       
 	       d_diff = distance(x1[0][i],x2[0][j],y1[0][i],y2[0][j]);
 	       
-	       if(d_diff < (r-delta_r))
+	       if(d_diff <= (r-delta_r))
 	       {
 		    sumsin2 += sin( theta2[0][j]);
 		    sumcos2 += cos( theta2[0][j]);
@@ -255,15 +267,15 @@ void update_vel(float x1[2][N],float y1[2][N],float theta1[2][N],float x2[2][N],
 	  sumcos1 = 0;
 	  count1 = 0;
 	  
-	  sumsin1 = 0;
-	  sumcos1 = 0;
-	  count1 = 0;
+	  sumsin2 = 0;
+	  sumcos2 = 0;
+	  count2 = 0;
 	  
 	  for(int j =0 ; j < N; j++)
 	  {
 	       d_same = distance(x2[0][i],x2[0][j],y2[0][i],y2[0][j]);
 	       
-	       if(d_same < r)
+	       if(d_same <= r)
 	       {
 		    sumsin1 += sin( theta2[0][j]);
 		    sumcos1 += cos( theta2[0][j]);
@@ -272,7 +284,7 @@ void update_vel(float x1[2][N],float y1[2][N],float theta1[2][N],float x2[2][N],
 	       
 	       d_diff = distance(x2[0][i],x1[0][j],y2[0][i],y1[0][j]);
 	       
-	       if(d_diff < (r-delta_r))
+	       if(d_diff <= (r-delta_r))
 	       {
 		    sumsin2 += sin( theta1[0][j]);
 		    sumcos2 += cos( theta1[0][j]);
@@ -382,7 +394,7 @@ float limit(float x)
      
 }
 
-void write_to_file(float x[2][N],float y[2][N])
+void write_to_file(float x1[2][N],float y1[2][N],float x2[2][N],float y2[2][N])
 {
      FILE *fp;
      
@@ -390,7 +402,12 @@ void write_to_file(float x[2][N],float y[2][N])
      
      for(int i=0;i<N;i++)
      {
-	  fprintf(fp,"%f\t%f\t",x[1][i],y[1][i]);
+	  fprintf(fp,"%f\t%f\t",x1[1][i],y1[1][i]);
+     }
+     
+     for(int i=0;i<N;i++)
+     {
+	  fprintf(fp,"%f\t%f\t",x2[1][i],y2[1][i]);
      }
      
      fprintf(fp,"\n");
@@ -403,10 +420,10 @@ void plot(FILE *fp)
      int i=1;
      double l=1;
      float x;
-     x= 4.9*10/L;
+     x= 3.9*10/L;
      
-     fprintf(fp,"set terminal wxt size 600,600\n");
-     fprintf(fp,"set size square 1,1\n");
+     fprintf(fp,"set terminal wxt size 1000,1000\n");
+     fprintf(fp,"set size square 1,1 \n");
      fprintf(fp,"set key off\n");
      fprintf(fp,"unset xtic \n");
      fprintf(fp,"unset ytic \n");
@@ -416,7 +433,7 @@ void plot(FILE *fp)
      fprintf(fp,"set yrange [0:%lf]\n",L);
      
      fprintf(fp,"plot \'data1.temp\' u %d:%d w points pointtype 6 ps %.1f,",1,2,x);
-     for(i=3;i<(2*N-1);i+=2)
+     for(i=3;i<(4*N-1);i+=2)
      {
 	  fprintf(fp,"\'data1.temp\' u %d:%d w points pointtype 6 ps %.1f,",i,i+1,x);  
      }
@@ -431,88 +448,7 @@ void plot(FILE *fp)
      
 }
 
-float *correlation(float x[2][N],float y[2][N],float theta[2][N],float l = 0,float delta_l = L/100)
-{
-     float* p;
-     p = (float *)malloc( sizeof(float)*(int)( (L-l)/delta_l ) );
-     int k = 0;
-     while(l<=L && k<= sizeof(float)*(int)( (L-l)/delta_l ))
-     {
-	  int count = 0;
-	  float sum = 0;
-	  for(int i=0;i<N;i++)
-	  {
-	       for(int j=0;j<N;j++)
-	       {
-		    float d = distance(x[1][i],x[1][j],y[1][i],y[1][j]);
-		    if(d > l && d < (l+delta_l) )
-		    {
-			 count++;
-			 sum += cos(theta[1][i])*cos(theta[1][j]) + sin(theta[1][i])*sin(theta[1][j]);
-		    }
-	       }
-	  }
-	  
-	  p[k] = sum/count;
-	  k++;
-	  l += delta_l;
-     }
-     
-     return p;
-     
-}
 
-void timeseriesplot()
-{
-     char name[50],output[50];
-     FILE *fp;
-     fp = popen("gnuplot","w");
-     
-     
-     
-     for(float density = 1;density<=5;density+=0.5)
-     {  
-	  for(float eta =0;eta<=5;eta+=.5)
-	  {
-	       for(long int T = 5000; T<=15000; T+= 5000)
-	       {
-		    
-		    FILE *fp;
-		    fp = popen("gnuplot","w");
-		    
-		    
-		    
-		    
-		    fprintf(fp,"set terminal png\n");
-		    fprintf(fp,"set xrange [0:%ld]\n",T);
-		    fprintf(fp,"set yrange [0:1.2]\n");
-		    fprintf(fp,"set xlabel 'T'\n");
-		    fprintf(fp,"set ylabel 'Order Parameter'\n");
-		    fprintf(fp,"set title \'D_%.1f,eta_%.1f,T_%ld\'",density,eta,T);
-		    sprintf(output,"time_%.1f_%.1f_%ld.png",density,eta,T);
-		    fprintf(fp,"set output \"%s\"",output);
-		    sprintf(name,"time_%.1f_%.1f_%ld_0.dat",density,eta,T);
-		    
-		    fprintf(fp,"plot \'%s\' u 1:2,",name);
-		    for(int i=1;i<9;i++)
-		    {
-			 sprintf(name,"time_%.1f_%.1f_%ld_%d.dat",density,eta,T,i);
-			 fprintf(fp,"\'%s\' u 1:2,",name);
-			 
-		    }
-		    sprintf(name,"time_%.1f_%.1f_%ld_9.dat",density,eta,T);
-		    fprintf(fp,"\'%s\' u 1:2 \n",name);
-		    
-		    fclose(fp);
-		    
-	       } 
-	  }
-	  
-	  
-     }
-     
-     
-     
-}
+
 
 

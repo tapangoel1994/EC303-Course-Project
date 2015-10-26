@@ -1,0 +1,55 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{color}
+\author{Arghyadip Mukherjee , Tapan Goel}
+\title{\color{blue}{Modelling mixed-species flocking}}
+\date{}
+\begin{document}
+
+\maketitle
+\section*{Introduction to Project:}
+%edited
+%One of the most fascinating phenomena in nature is emergence of order in a multicomponent system. Be it a crowd of pedestrians on the Millennium Bridge [1] or a flock of starlings on the Rome skyscape[2], collective order on a macroscopic scale is beautiful, mysterious and sometimes beyond intuition. Collective motion of biological agents, the word being used in a very general sense ranging from birds to actomyosin fibers in our body, is truly a challenging problem (WHAT IS CHALLENGING ABOUT IT?). Typically, physics enters the regime of biological problems in three ways: Mechanics, Information and Energy (ABSTRACT). Fortunately the field of collective motion offers physicists entry in all three ways (JUSTIFY; OR REMOVE BOTH THIS AND THE PREV. SENTENCE).
+
+The field of collective motion was conceived by the seminal work of Vicsek et.al. in 1990s [1] drawing our attention to a long neglected phenomena occurring everyday in front of our eyes and explaining it with a very simple model of metric interaction [2].
+
+%edited :
+%removed:
+%, may be even an ensemble of electron spins restlessly rearranging under a magnetic field (NOT A GOOD EXAMPLE BECAUSE THERE IS A HOMOGENEOUS EXT. FORCE IN THIS CASE, UNLIKE OTHERS)
+Mixed species flocks abound in nature especially in northern temperate zones and tropical forests. It is believed that mixed species flocks provide greater predator defence due to dilution effect, many-eyes effect and increased vigilance. They also provide foraging benefits through greater resource finding ability. In their work on mixed-species flocks, Sridhar et al [3] report that across the world, for all species forming mixed flocks, foraging rates increase and vigilance decreases in mixed species flocks as compared to solitary individuals as well as single - species flocks. They also report that the benefits are not necessarily enjoyed to the same extent by both species - often the follower species benefits more. These findings make make mixed species flocks interesting to look at from a animal behaviour point of view as to why the less benefited species would participate in mixed flocks in the first place.
+\\
+We however, focus on the structure and dynamics of mixed flocks. 
+The aim of the project is to look at mixed species flocks through the lens of the Vicsek Model  We aim to study the the dynamics and emergent structures in mixed flocks using the framework of Vicsek model. We try to address a few fundamental questions:
+\begin{itemize}
+\item Develop a mixed species model where inter-species and intra-specices flocking interactions are not identical. 
+
+\item How does the difference in interspecies and intra-species interactions affect the phase transition? More specifically, how does the critical noise value ($\eta_{c}$) as a function of the difference in the above parameter. 
+
+\item Structure: Is there a natural level of spatial segregation within the 
+flock? We try to quantify the extent of segregation of species within the flock as a function of the difference in interspecies and intra-species interactions.We aim to do so by looking at the group size distribution of the two species.% (WHAT WILL YOU QUANTIFY? MAY BE THE GROUP SIZE DISTRIBUTION AND COMPOSITIONS?)
+%Here it is possible to try and quantify the composition of each flock. Since we have not incorporated any information related to dominance of one species over another, it will be a good idea to check if 
+
+\item Information: We measure the extent and rate of information transfer in the flocking, looking at the difference in transfer within each species against that between the species.
+\item We would also want to look at if mixed species flock can emerge from encounter of two completely ordered single species flocks despite the tendency to favour your own species(since $r_{AA}=r_{BB}>r_{AB}=r_{BA}$). For example we can try to look at mixing of two anti-parallel ordered flows of species A and B and whether we obtain a mixed AB flock due to the mixing or not.  
+\end{itemize}
+
+\section*{Model Details}
+We consider equal number of individuals of two similar species. The individuals interact in the manner proposed in the standard Vicsek Model, except that while the interaction radius for individuals of same species is $r$, interaction radius for individuals of other species is $ r -\Delta r $, where $\Delta r \in [0,r]$. In the $\Delta r\rightarrow r$ limit we recover our original Vicsek Model for two non-interacting species, on the opposite limit of $\Delta r \rightarrow 0$ we obtain essentially a single species Vicsek model.
+
+\section*{References}
+\begin{enumerate}
+     \setlength{\itemsep}{0.1cm}
+  	 \setlength{\parskip}{0cm}
+  	 
+    
+     \item T.Vicsek et.al, \textit{Novel type of phase transition in a system of selfdriven particles},   \textbf{Phys.Rev.Lett. 75,1226-1229} (1995)
+     \item T.Vicsek and A.Zafeiris,\textit{Collective motion}, \textbf{Phys.Rep. 517, 71–140}, (2012)
+     	\item 	Sridhar, Hari and Beauchamp, Guy and Shanker, Kartik, \textit{Why do birds participate in mixed-species foraging flocks? A large-scale synthesis}, \textbf{Animal Behaviour 78,2 337-347}, (2009)
+    \end{enumerate}
+
+
+\end{document}

@@ -432,14 +432,17 @@ void plot(FILE *fp)
      fprintf(fp,"set xrange [0:%lf]\n",L);
      fprintf(fp,"set yrange [0:%lf]\n",L);
      
-     fprintf(fp,"plot \'data1.temp\' u %d:%d w points pointtype 6 ps %.1f,",1,2,x);
-     for(i=3;i<(4*N-1);i+=2)
+     fprintf(fp,"plot \'data1.temp\' u %d:%d w points pointtype 6 ps %.1f lc \"red\",",1,2,x);
+     for(i=3;i<=(2*N-1);i+=2)
      {
-	  fprintf(fp,"\'data1.temp\' u %d:%d w points pointtype 6 ps %.1f,",i,i+1,x);  
+	  fprintf(fp,"\'data1.temp\' u %d:%d w points pointtype 6 ps %.1f lc \"red\",",i,i+1,x);  
+     }
+     for(i=2*N+1;i<(4*N-1);i+=2)
+     {
+	  fprintf(fp,"\'data1.temp\' u %d:%d w points pointtype 6 ps %.1f lc \"blue\",",i,i+1,x);  
      }
      
-     
-     fprintf(fp,"\'data1.temp\' u %d:%d w points pointtype 6 ps %.1f\n",i,i+1,x);
+     fprintf(fp,"\'data1.temp\' u %d:%d w points pointtype 6 ps %.1f lc \"blue\" \n",i,i+1,x);
      
      
      usleep(10000);

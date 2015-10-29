@@ -40,43 +40,49 @@ void write_to_file(float x1[2][N],float y1[2][N],float x2[2][N],float y2[2][N]);
 int main()
 {
      float x1[2][N],y1[2][N],theta1[2][N],x2[2][N],y2[2][N],theta2[2][N];
-     int n=1;
+     int n=5;
      float v_a[n],mean,stdev;
      float density;
      char name[100];
      long int T = 5000;
      FILE *data;
      
-     data = fopen("Test.csv","w");
-     
-     density = 4.00;
-     L = sqrt(2*N/density);
-     
-    fprintf(data,"Noise,OP,Error\n");
-     
-     for(eta = 3;eta <= 7;eta+= .25)
+     for(delta_r = 0; delta_r <=1;delta_r += 0.1)
      {
-	  for(int i = 0; i< n;i++)
+	  sprintf(name,"N_50_Delta_r_%.1f.csv",delta_r);
+	  data = fopen(name,"w");
+     
+	  density = 4.00;
+	  L = sqrt(2*N/density);
+     
+	  fprintf(data,"Density,Noise,OP,Error\n");
+     
+	  for(eta = 0;eta <= 7;eta+= .25)
 	  {
-	       v_a[i] = simulate(x1,y1,theta1,x2,y2,theta2,T,data);     
-	  }
+	       for(int i = 0; i< n;i++)
+	       {
+		    v_a[i] = simulate(x1,y1,theta1,x2,y2,theta2,T,data);     
+	       }
 	  
-	  mean = 0;
-	  stdev = 0;
+	       mean = 0;
+	       stdev = 0;
 	  
-	  for(int i = 0;i < n; i++)
-	  {
-	       mean += v_a[i];
-	       stdev += v_a[i]*v_a[i]; 
-	  }
+	       for(int i = 0;i < n; i++)
+	       {
+		    mean += v_a[i];
+		    stdev += v_a[i]*v_a[i]; 
+	       }
 	  
-	  mean = mean/n;
-// 	  stdev = (stdev - n*mean*mean)/(n-1);
+	       mean = mean/n;
+	       stdev = (stdev - n*mean*mean)/(n-1);
 	  
-	  fprintf(data,"%.2f,%.2f,%.2f\n",eta,mean,stdev);
+	       fprintf(data,"%.2f,%.2f,%.2f,%.2f\n",density,eta,mean,stdev);
+	  }	
+     
+	  fclose(data);
+     
      }
      
-     fclose(data);
      return 0;
 }
 
@@ -84,9 +90,9 @@ int main()
 float simulate(float x1[2][N],float y1[2][N],float theta1[2][N],float x2[2][N],float y2[2][N],float theta2[2][N],long int T,FILE *fp)
 {
      
-      FILE *gnupipe;
-       gnupipe = popen("gnuplot -persistent","w");
-     
+//       FILE *gnupipe;
+//        gnupipe = popen("gnuplot -persistent","w");
+//      
      
      initialize(x1,y1,theta1,x2,y2,theta2);   
      long int t;
@@ -97,14 +103,14 @@ float simulate(float x1[2][N],float y1[2][N],float theta1[2][N],float x2[2][N],f
 	  update_vel(x1,y1,theta1,x2,y2,theta2);
 	  
 	  //fprintf(fp,"%ld\t%f\n",t,Orderparameter(theta));
-	   write_to_file(x1,y1,x2,y2);
-	  
-	  plot(gnupipe);
-	  
+// 	   write_to_file(x1,y1,x2,y2);
+// 	  
+// 	  plot(gnupipe);
+// 	  
 	  swap(x1,y1,theta1,x2,y2,theta2);
      }
      
-      pclose(gnupipe);
+//       pclose(gnupipe);
      /*
      for(i = 0;i < (N-1);i++)
      {

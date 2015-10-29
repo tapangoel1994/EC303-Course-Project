@@ -1,5 +1,13 @@
-//This code simulates the mixed species Viscek Model - no repulsion, no turning angle, scalar noise and angle based implementation.
 
+//NOTE: Explicity put in the following parameters - the aim of the code is to visualize the simulation for a single parameter set:
+// r
+// delta_r
+// eta
+// density
+// N
+
+
+//This code simulates the mixed species Viscek Model - no repulsion, no turning angle, scalar noise and angle based implementation.
 // Angles are chosen over [-PI,PI] and are maintained so throughout.
 // The size of spheres in the animations are not to scale.
 #include<stdio.h>
@@ -19,7 +27,7 @@ const int N=50; // Number of individuals in each flock
 float L,r=1,delta_r = 0,v=.03,delta_t=1,eta;
 
 
-float simulate(float x1[2][N],float y1[2][N],float theta1[2][N],float x2[2][N],float y2[2][N],float theta2[2][N],long int T, FILE *fp); //Runs simulation
+float simulate(float x1[2][N],float y1[2][N],float theta1[2][N],float x2[2][N],float y2[2][N],float theta2[2][N],long int T); //Runs simulation
 void initialize(float x1[2][N],float y1[2][N],float theta1[2][N],float x2[2][N],float y2[2][N],float theta2[2][N]); // Gives random initial values to position and direction of each particle
 void update_pos(float x1[2][N],float y1[2][N],float theta1[2][N],float x2[2][N],float y2[2][N],float theta2[2][N]); // Updates position of each particle
 void update_vel(float x1[2][N],float y1[2][N],float theta1[2][N],float x2[2][N],float y2[2][N],float theta2[2][N]); // Updates velocity of each particle
@@ -40,48 +48,29 @@ void write_to_file(float x1[2][N],float y1[2][N],float x2[2][N],float y2[2][N]);
 int main()
 {
      float x1[2][N],y1[2][N],theta1[2][N],x2[2][N],y2[2][N],theta2[2][N];
-     int n=1;
-     float v_a[n],mean,stdev;
+     
+     float v_a;
      float density;
      char name[100];
      long int T = 5000;
-     FILE *data;
      
-     data = fopen("Test.csv","w");
+     //Enter Parameter Values
      
-     density = 4.00;
+     density = 1.00;
+     eta =  3;
+     r = 1;
+     delta_r = 0;
      L = sqrt(2*N/density);
+    
+     //Run Simulation
      
-    fprintf(data,"Noise,OP,Error\n");
-     
-     for(eta = 3;eta <= 7;eta+= .25)
-     {
-	  for(int i = 0; i< n;i++)
-	  {
-	       v_a[i] = simulate(x1,y1,theta1,x2,y2,theta2,T,data);     
-	  }
-	  
-	  mean = 0;
-	  stdev = 0;
-	  
-	  for(int i = 0;i < n; i++)
-	  {
-	       mean += v_a[i];
-	       stdev += v_a[i]*v_a[i]; 
-	  }
-	  
-	  mean = mean/n;
-// 	  stdev = (stdev - n*mean*mean)/(n-1);
-	  
-	  fprintf(data,"%.2f,%.2f,%.2f\n",eta,mean,stdev);
-     }
-     
-     fclose(data);
+     v_a = simulate(x1,y1,theta1,x2,y2,theta2,T);         
+    
      return 0;
 }
 
 
-float simulate(float x1[2][N],float y1[2][N],float theta1[2][N],float x2[2][N],float y2[2][N],float theta2[2][N],long int T,FILE *fp)
+float simulate(float x1[2][N],float y1[2][N],float theta1[2][N],float x2[2][N],float y2[2][N],float theta2[2][N],long int T)
 {
      
       FILE *gnupipe;

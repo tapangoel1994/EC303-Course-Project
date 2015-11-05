@@ -21,10 +21,10 @@ using namespace std;
 #define PI 3.14159
 
 
-const int N=50; // Number of individuals in each flock
+const int N=200; // Number of individuals in each flock
 
 
-float L,r=1,delta_r = 0,v=.03,delta_t=1,eta;
+float L,r=1,delta_r,v=.03,delta_t=1,eta,density;
 
 
 float simulate(float x1[2][N],float y1[2][N],float theta1[2][N],float x2[2][N],float y2[2][N],float theta2[2][N],long int T); //Runs simulation
@@ -40,7 +40,7 @@ float *correlation(float x[2][N],float y[2][N],float theta[2][N],float l,float d
 
 
 void timeseriesplot();
-void plot(FILE *fp);
+void plot(FILE *fp,long int t);
 void write_to_file(float x1[2][N],float y1[2][N],float x2[2][N],float y2[2][N]);
 
 
@@ -50,14 +50,14 @@ int main()
      float x1[2][N],y1[2][N],theta1[2][N],x2[2][N],y2[2][N],theta2[2][N];
      
      float v_a;
-     float density;
+     
      char name[100];
      long int T = 5000;
      
      //Enter Parameter Values
      
-     density = 1.00;
-     eta =  3;
+     density = 0.25;
+     eta =  .5;
      r = 1;
      delta_r = 0;
      L = sqrt(2*N/density);
@@ -88,7 +88,7 @@ float simulate(float x1[2][N],float y1[2][N],float theta1[2][N],float x2[2][N],f
 	  //fprintf(fp,"%ld\t%f\n",t,Orderparameter(theta));
 	   write_to_file(x1,y1,x2,y2);
 	  
-	  plot(gnupipe);
+	  plot(gnupipe,t);
 	  
 	  swap(x1,y1,theta1,x2,y2,theta2);
      }
@@ -404,7 +404,7 @@ void write_to_file(float x1[2][N],float y1[2][N],float x2[2][N],float y2[2][N])
      fclose(fp);
 }
 
-void plot(FILE *fp)
+void plot(FILE *fp,long int t)
 {
      int i=1;
      double l=1;
@@ -418,6 +418,7 @@ void plot(FILE *fp)
      fprintf(fp,"unset ytic \n");
      fprintf(fp,"set grid xtic\n");
      fprintf(fp,"set grid ytic\n");
+     fprintf(fp,"set title \"Density %.2f Time %ld \" \n",density,t);
      fprintf(fp,"set xrange [0:%lf]\n",L);
      fprintf(fp,"set yrange [0:%lf]\n",L);
      
